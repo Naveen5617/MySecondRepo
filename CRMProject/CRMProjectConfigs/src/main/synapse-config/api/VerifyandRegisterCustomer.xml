@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/VerifyandRegisterCustomer" name="VerifyandRegisterCustomer" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="POST GET">
+        <inSequence>
+            <propertyGroup>
+                <property expression="json-eval($.CallerID)" name="CallerID" scope="default" type="STRING"/>
+                <property expression="json-eval($.CallerKey)" name="CallerKey" scope="default" type="STRING"/>
+                <property expression="json-eval($.RequestData.Email)" name="Email" scope="default" type="STRING"/>
+                <property expression="json-eval($.RequestData.EnglishName)" name="EnglishName" scope="default" type="STRING"/>
+                <property expression="json-eval($.RequestData.MobileNumber)" name="MobileNumber" scope="default" type="STRING"/>
+                <property expression="json-eval($.RequestData.CRType)" name="CRType" scope="default" type="STRING"/>
+                <property expression="json-eval($.RequestData.CRNumber)" name="CRNumber" scope="default" type="STRING"/>
+            </propertyGroup>
+            <payloadFactory media-type="json">
+                <format>{&#xd;
+&#xd;
+"CallerID": "$1",&#xd;
+&#xd;
+"CallerKey": "$2",&#xd;
+&#xd;
+"RequestData": {&#xd;
+&#xd;
+"Email": "$3",&#xd;
+&#xd;
+"EnglishName": "$4",&#xd;
+&#xd;
+"MobileNumber": "$5",&#xd;
+&#xd;
+"CRType": $6,&#xd;
+&#xd;
+"CRNumber": "$7"&#xd;
+&#xd;
+}&#xd;
+&#xd;
+}</format>
+                <args>
+                    <arg evaluator="xml" expression="$ctx:CallerID"/>
+                    <arg evaluator="xml" expression="$ctx:CallerKey"/>
+                    <arg evaluator="xml" expression="$ctx:Email"/>
+                    <arg evaluator="xml" expression="$ctx:EnglishName"/>
+                    <arg evaluator="xml" expression="$ctx:MobileNumber"/>
+                    <arg evaluator="xml" expression="$ctx:CRType"/>
+                    <arg evaluator="xml" expression="$ctx:CRNumber"/>
+                </args>
+            </payloadFactory>
+            <log level="full" separator="     afterpayload    "/>
+            <call>
+                <endpoint key="VerifyandRegister_EP"/>
+            </call>
+            <log level="full" separator="----- afterep---"/>
+            <property expression="json-eval($.ResponseData.CustomerName)" name="abc" scope="default" type="STRING"/>
+            <filter regex="true" source="boolean($ctx:abc)">
+                <then/>
+                <else>
+                    <payloadFactory media-type="json">
+                        <format>{&#xd;
+&#xd;
+"ResponseData":[]&#xd;
+&#xd;
+&#xd;
+}</format>
+                        <args/>
+                    </payloadFactory>
+                </else>
+            </filter>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence/>
+    </resource>
+</api>

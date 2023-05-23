@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/ProcessAPICustomerWasel" name="ProcessAPICustomerWasel" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="GET">
+        <inSequence>
+            <propertyGroup>
+                <property expression="get-property(query.param.userName)" name="userName" scope="default" type="STRING"/>
+                <property expression="get-property(query.param.password)" name="password" scope="default" type="STRING"/>
+                <property expression="get-property(query.param.id)" name="id" scope="default" type="STRING"/>
+                <property expression="get-property(query.param.idType)" name="idType" scope="default" type="STRING"/>
+                <property expression="get-property(query.param.sequenceNumber)" name="sequenceNumber" scope="default" type="STRING"/>
+            </propertyGroup>
+            <payloadFactory media-type="json">
+                <format>{&#xd;
+    "GetCustomerWaselNotCancelledResponse": {&#xd;
+        "GetCustomerWaselNotCancelledResult": {&#xd;
+            "ErrorCode": 2,&#xd;
+            "ErrorFriendlyMessage": "Exception in MT service: There was an error generating the XML document.",&#xd;
+            "Status": false,&#xd;
+            "SystemErrorMessage": null&#xd;
+        },&#xd;
+        "subscriptionTypeModel": null&#xd;
+    }&#xd;
+}</format>
+                <args/>
+            </payloadFactory>
+            <script language="js"><![CDATA[var payload = mc.getPayloadJSON();
+var log=mc.getServiceLog();
+log.info("payload in log is "+payload);
+
+
+if(Object.keys(payload.GetCustomerWaselNotCancelledResponse).length > 0)
+{ 
+var transform = {
+"totalSearchResults": payload.GetCustomerWaselNotCancelledResponse.GetCustomerWaselNotCancelledResult.length.toFixed(),
+"Addresses":constructGetCustomerWasel(),
+ "subscriptionTypeModel":payload.GetCustomerWaselNotCancelledResponse.subscriptionTypeModel,
+"PostCode": null,
+"success": true,
+"result": null,
+"statusdescription": "SUCCESS",
+"fullexception": null
+};
+}
+else
+{
+var transform = {
+	"totalSearchResults": "0",
+ "Addresses": null,
+ "subscriptionTypeModel":null,
+    "PostCode": null,
+    "success": true,
+    "result": null,
+    "statusdescription": "NO-RESULTS",
+    "fullexception": null
+ };
+}
+function constructGetCustomerWasel() {
+var Address=[];
+for(i=0;i<payload.GetCustomerWaselNotCancelledResponse.GetCustomerWaselNotCancelledResult.length;i++) {
+var d=payload.GetCustomerWaselNotCancelledResponse.GetCustomerWaselNotCancelledResult[i];
+var data = {
+              
+                ErrorCode: (null !=d.ErrorCode?d.ErrorCode :""),
+				ErrorFriendlyMessage:  (null !=d.ErrorFriendlyMessage?d.ErrorFriendlyMessage :""),
+                Status: (null !=d.Status?d.Status :""),
+                SystemErrorMessage: (null !=d.SystemErrorMessage?d.SystemErrorMessage :"")				
+				
+}
+Address.push(data);
+};
+return Address;
+}
+
+
+mc.setPayloadJSON(transform);]]></script>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence/>
+    </resource>
+</api>

@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="DBSPAutoComplete_Seq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <propertyGroup>
+        <property name="CommonLogFlowId" scope="default" type="STRING" value="PAPIAutoComplete"/>
+        <property name="CommonLogInQueue" scope="default" type="STRING" value="GET -/PAPIAutoComplete"/>
+        <property expression="get-property('MessageID')" group="3" name="CommonLogLoggingId" pattern="((urn|uuid):)*(.*)" scope="default" type="STRING"/>
+        <property expression="get-property('correlation_id')" name="CommonLogLoggingId2" scope="default" type="STRING"/>
+        <property name="CommonLogMessageType" scope="default" type="STRING" value="application/json"/>
+        <property name="CommonLogOutQueue" scope="default" type="STRING" value="GET  -/AutoComplete"/>
+    </propertyGroup>
+    <propertyGroup>
+        <property expression="get-property('query.param.cityid')" name="cityid" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.districtid')" name="districtid" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.querytext')" name="QueryText" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.cityname')" name="cityName" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.language')" name="language" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.page')" name="pageNumber" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.format')" name="format" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.language')" name="language" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.encode')" name="encode" scope="default" type="STRING"/>
+    </propertyGroup>
+    <log level="full" separator="  ***FisrstLog ***********    "/>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="{application/json}"/>
+    </call-template>
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+	"CityID": "$1",&#xd;
+	"districtID": "$2",&#xd;
+	"CityNAME": "$3",&#xd;
+	"BuildingNumber": "$4",&#xd;
+    "Language":"$5"&#xd;
+}</format>
+        <args>
+            <arg evaluator="xml" expression="$ctx:cityid"/>
+            <arg evaluator="xml" expression="$ctx:districtid"/>
+            <arg evaluator="xml" expression="$ctx:cityName"/>
+            <arg evaluator="xml" expression="$ctx:QueryText"/>
+            <arg evaluator="xml" expression="$ctx:language"/>
+        </args>
+    </payloadFactory>
+    <log level="full" separator="    ******AftrPyload*****    "/>
+    <call>
+        <endpoint key="AutoCompletefeature"/>
+    </call>
+    <log level="full" separator="  ***AftrEP*****   "/>
+    <script language="js"><![CDATA[var payload =mc.getPayloadJSON();
+    var Addresses = constructAddress();
+var	totalSearch=payload.GetFeatures.GetFeature.length;
+var Features=Addresses
+    mc.setPayloadJSON(Features);
+	 mc.setProperty("getFeature", JSON.stringify(Features));
+	 mc.setProperty("totalSearch",totalSearch);
+
+    function constructAddress () {
+        var address=[];
+
+        for(i=0;i<payload.GetFeatures.GetFeature.length;i++) {
+var d=payload.GetFeatures.GetFeature[i];
+            var data = {
+                FKTABLEMAPID : (null != d.FKTABLEMAPID?d.FKTABLEMAPID:""),
+                GeoXCoordinate : (null != d.GeoXCoordinate?d.GeoXCoordinate:""),
+                GeoYCoordinate: (null != d.GeoYCoordinate?d.GeoYCoordinate: "" ),
+                FkCityId:  ( null !=d.FkCityId?d.FkCityId :""),
+                CityName:  ( null !=d.CityName?d.CityName :""),
+                FkDistrictId:  ( null !=d.FkDistrictId?d.FkDistrictId :""),
+                DistrictName:  ( null !=d.DistrictName?d.DistrictName :""),
+                StreetName:  ( null !=d.StreetName?d.StreetName :""),
+                AdditionalNumber:  ( null !=d.AdditionalNumber?d.AdditionalNumber :""),
+                BuildingNumber:  ( null !=d.BuildingNumber?d.BuildingNumber :""),
+                ZipCode:  ( null !=d.ZipCode?d.ZipCode :""),
+                FkRegionId: ( null !=d.FkRegionId?d.FkRegionId :null),
+                AddressId: ( null !=d.AddressId?d.AddressId :"")
+            }
+            address.push(data);
+          };
+          return address;
+    }]]></script>
+    <propertyGroup>
+        <property expression="get-property('getFeature')" name="getFeature" scope="default" type="STRING"/>
+        <property expression="get-property('getFeature1')" name="getFeature1" scope="default" type="STRING"/>
+        <property expression="get-property('totalSearch')" name="totalSearch" scope="default" type="STRING"/>
+    </propertyGroup>
+    <log level="custom" separator="  *****featureCheck******   ">
+        <property expression="$ctx:getFeature" name="getFeature"/>
+        <property expression="$ctx:getFeature1" name="getFeature1"/>
+        <property expression="$ctx:totalSearch" name="totalSearch"/>
+    </log>
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+	"CityID": "$1",&#xd;
+	"districtID": "$2",&#xd;
+	"CityNAME": "$3",&#xd;
+	"BuildingNumber": "$4",&#xd;
+    "Language":"$5"&#xd;
+}</format>
+        <args>
+            <arg evaluator="xml" expression="$ctx:cityid"/>
+            <arg evaluator="xml" expression="$ctx:districtid"/>
+            <arg evaluator="xml" expression="$ctx:cityName"/>
+            <arg evaluator="xml" expression="$ctx:QueryText"/>
+            <arg evaluator="xml" expression="$ctx:language"/>
+        </args>
+    </payloadFactory>
+    <call>
+        <endpoint key="AutoCompleteDistrictSys_EP"/>
+    </call>
+    <script language="js"><![CDATA[var payload =mc.getPayloadJSON();
+     var Addresses = constructDistrict();
+	var District=Addresses;
+     mc.setPayloadJSON(District);
+	 mc.setProperty("getDistrict", JSON.stringify(District));
+
+    function constructDistrict() {
+        var address=[];
+
+        for(i=0;i<payload.AutoComplete_getAddresses.AutoComplete_getAddress.length;i++) {
+var d=payload.AutoComplete_getAddresses.AutoComplete_getAddress[i];
+            var data = {
+                CityId : (null != d.fkCityID?d.fkCityID:""),
+                DistrictId : (null != d.pkDistrictID?d.pkDistrictID:""),
+                ArabicName: (null != d.ArabicName?d.ArabicName: "" ),
+                EnglishName:  ( null !=d.EnglishName?d.EnglishName :"")
+            }
+            address.push(data);
+          };
+          return address;
+    }]]></script>
+    <propertyGroup>
+        <property expression="get-property('getDistrict')" name="getDistrict" scope="default" type="STRING"/>
+    </propertyGroup>
+    <log level="custom" separator="   *****GDisPr*******   ">
+        <property expression="$ctx:getDistrict" name="getDistrict"/>
+    </log>
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+	"CityID": "$1",&#xd;
+	"districtID": "$2",&#xd;
+	"CityNAME": "$3",&#xd;
+	"BuildingNumber": "$4",&#xd;
+    "Language":"$5" &#xd;
+}</format>
+        <args>
+            <arg evaluator="xml" expression="$ctx:cityid"/>
+            <arg evaluator="xml" expression="$ctx:districtid"/>
+            <arg evaluator="xml" expression="$ctx:cityName"/>
+            <arg evaluator="xml" expression="$ctx:QueryText"/>
+            <arg evaluator="xml" expression="$ctx:language"/>
+        </args>
+    </payloadFactory>
+    <call>
+        <endpoint key="AutoCompleteStreetSys_EP"/>
+    </call>
+    <script language="js"><![CDATA[var payload =mc.getPayloadJSON();
+var log=mc.getServiceLog();
+     var Addresses = constructStreet();
+var	Street=Addresses
+     mc.setPayloadJSON(Street);
+mc.setProperty("getStreet", JSON.stringify(Street));
+    function constructStreet() {
+        var address=[];
+
+        for(i=0;i<payload.AutoComplete_getStreets.AutoComplete_getStreet.length;i++) {
+var d=payload.AutoComplete_getStreets.AutoComplete_getStreet[i];
+            var data = {
+                CityId : (null != d.fkCityID?d.fkCityID:""),
+                CityName : (null != d.CityName?d.CityName:""),
+                StreetName: (null != d.StreetName?d.StreetName: "" )
+            }
+            address.push(data);
+          };
+          return address;
+    }]]></script>
+    <propertyGroup>
+        <property expression="get-property('getStreet')" name="getStreet" scope="default" type="STRING"/>
+    </propertyGroup>
+    <log level="custom" separator="   *****NGStreetEP*****   ">
+        <property expression="$ctx:getStreet" name="getStreet"/>
+    </log>
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+"Addresses":$1,&#xd;
+"Districts":$2,&#xd;
+"Streets":$3,&#xd;
+"Status": true,&#xd;
+   "TotalResults": "$4",&#xd;
+    "ErrorDetails": null&#xd;
+}</format>
+        <args>
+            <arg evaluator="xml" expression="$ctx:getFeature"/>
+            <arg evaluator="xml" expression="$ctx:getDistrict"/>
+            <arg evaluator="xml" expression="$ctx:getStreet"/>
+            <arg evaluator="xml" expression="$ctx:totalSearch"/>
+        </args>
+    </payloadFactory>
+    <filter regex="xml" source="$ctx:format">
+        <then>
+            <propertyGroup>
+                <property expression="json-eval($.Addresses)" name="Addresses" scope="default" type="STRING"/>
+                <property expression="json-eval($.Districts)" name="Districts" scope="default" type="STRING"/>
+                <property expression="json-eval($.Streets)" name="Streets" scope="default" type="STRING"/>
+                <property expression="json-eval($.Status)" name="Status" scope="default" type="STRING"/>
+                <property expression="json-eval($.TotalResults)" name="TotalResults" scope="default" type="STRING"/>
+                <property expression="json-eval($.ErrorDetails)" name="ErrorDetails" scope="default" type="STRING"/>
+            </propertyGroup>
+            <payloadFactory media-type="json">
+                <format>{&#xd;
+"Addresses":$1,&#xd;
+"Districts":$2,&#xd;
+"Streets":$3&#xd;
+}</format>
+                <args>
+                    <arg evaluator="xml" expression="$ctx:Addresses"/>
+                    <arg evaluator="xml" expression="$ctx:Districts"/>
+                    <arg evaluator="xml" expression="$ctx:Streets"/>
+                </args>
+            </payloadFactory>
+            <log level="full" separator="  *****PAPIAftrPL*****       "/>
+            <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+            <payloadFactory media-type="xml">
+                <format>
+                    <AutoCompleteAddressOutput xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                        <Status>$3</Status>
+                        <TotalResults>$2</TotalResults>
+                        <AutoCompleteResult>
+                            <Addresses>$1</Addresses>
+                        </AutoCompleteResult>
+                        <Districts>
+                            <AutoCompleteDistrictResult>$4</AutoCompleteDistrictResult>
+                        </Districts>
+                        <Streets>
+                            <AutoCompleteStreetResult>$5</AutoCompleteStreetResult>
+                        </Streets>
+                    </AutoCompleteAddressOutput>
+                </format>
+                <args>
+                    <arg evaluator="xml" expression="$body//jsonObject/Addresses"/>
+                    <arg evaluator="xml" expression="$ctx:TotalResults"/>
+                    <arg evaluator="xml" expression="$ctx:Status"/>
+                    <arg evaluator="xml" expression="$body//jsonObject/Districts"/>
+                    <arg evaluator="xml" expression="$body//jsonObject/Streets"/>
+                </args>
+            </payloadFactory>
+            <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+        </then>
+        <else>
+            <propertyGroup>
+                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+            </propertyGroup>
+        </else>
+    </filter>
+</sequence>

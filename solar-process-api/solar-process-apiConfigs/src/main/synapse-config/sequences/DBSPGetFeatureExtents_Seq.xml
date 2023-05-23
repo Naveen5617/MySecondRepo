@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="DBSPGetFeatureExtents_Seq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <propertyGroup>
+        <property expression="get-property('query.param.layername')" name="type" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.featureid')" name="id" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.format')" name="format" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.encode')" name="encode" scope="default" type="STRING"/>
+    </propertyGroup>
+    <propertyGroup>
+        <property name="CommonLogFlowId" scope="default" type="STRING" value="GetExtentsFeature"/>
+        <property name="CommonLogInQueue" scope="default" type="STRING" value="GET -/Address/GetExtentsFeature"/>
+        <property expression="get-property('MessageID')" group="3" name="CommonLogLoggingId" pattern="((urn|uuid):)*(.*)" scope="default" type="STRING"/>
+        <property expression="get-property('correlation_id')" name="CommonLogLoggingId2" scope="default" type="STRING"/>
+        <property name="CommonLogMessageType" scope="default" type="STRING" value="application/json"/>
+        <property name="CommonLogOutQueue" scope="default" type="STRING" value="GET -/Address/GetExtentsFeature"/>
+    </propertyGroup>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <log/>
+    <filter regex="true" source="boolean(boolean(get-property('query.param.type')) and boolean(get-property('query.param.id')))">
+        <then/>
+        <else>
+            <payloadFactory media-type="json">
+                <format>{&#xd;
+"msg":"please enter valid data"&#xd;
+}</format>
+                <args/>
+            </payloadFactory>
+        </else>
+    </filter>
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+"type":"$1",&#xd;
+"id":"$2"&#xd;
+}</format>
+        <args>
+            <arg evaluator="xml" expression="$ctx:type"/>
+            <arg evaluator="xml" expression="$ctx:id"/>
+        </args>
+    </payloadFactory>
+    <log level="full" separator="  getExtentsAfterPayload "/>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <call>
+        <endpoint key="DBSPGetFeatureExtentsSys_EP"/>
+    </call>
+    <script language="js"><![CDATA[var payload =mc.getPayloadJSON();				
+var payload = constructpayload();
+function constructpayload (){
+	var d = payload;
+            var data = {
+				minx:  (null !=d.minx?d.minx :""),
+                miny:  (null !=d.miny?d.miny :""),
+                maxx: (null !=d.maxx?d.maxx :""),
+                maxy: (null !=d.maxy?d.maxy :""),
+                success: true,
+                result: null,
+                satusdescription: "SUCCESS",
+                fullexception: null
+                
+            }
+            return data;
+};
+mc.setPayloadJSON(payload);]]></script>
+    <log level="full" separator="**************inpapi AfterScript*****************"/>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <filter regex="xml" source="$ctx:format">
+        <then>
+            <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+            <payloadFactory media-type="xml">
+                <format>
+                    <Extents xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                        <success>$1</success>
+                        <satusdescription>$2</satusdescription>
+                        <minx>$3</minx>
+                        <miny>$4</miny>
+                        <maxx>$5</maxx>
+                        <maxy>$6</maxy>
+                    </Extents>
+                </format>
+                <args>
+                    <arg evaluator="xml" expression="$body//jsonObject/success"/>
+                    <arg evaluator="xml" expression="$body//jsonObject/satusdescription"/>
+                    <arg evaluator="xml" expression="$body//jsonObject/minx"/>
+                    <arg evaluator="xml" expression="$body//jsonObject/miny"/>
+                    <arg evaluator="xml" expression="$body//jsonObject/maxx"/>
+                    <arg evaluator="xml" expression="$body//jsonObject/maxy"/>
+                </args>
+            </payloadFactory>
+            <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+        </then>
+        <else>
+            <propertyGroup>
+                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+            </propertyGroup>
+        </else>
+    </filter>
+</sequence>

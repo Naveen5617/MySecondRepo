@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/GetCustomerWaselNotCancelled" name="GetCustomerWaselNotCancelled" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="POST GET">
+        <inSequence>
+            <propertyGroup>
+                <property expression="json-eval($.userName)" name="userName" scope="default" type="STRING"/>
+                <property expression="json-eval($.password)" name="password" scope="default" type="STRING"/>
+                <property expression="json-eval($.id)" name="id" scope="default" type="STRING"/>
+                <property expression="json-eval($.idType)" name="idType" scope="default" type="STRING"/>
+                <property expression="json-eval($.sequenceNumber)" name="sequenceNumber" scope="default" type="STRING"/>
+            </propertyGroup>
+            <payloadFactory media-type="json">
+                <format>{&#xd;
+"userName":"$1",&#xd;
+"password":"$2",&#xd;
+"id":"$3",&#xd;
+"idType":"$4",&#xd;
+"sequenceNumber":"$5",&#xd;
+"laborOffice":"$6"&#xd;
+}</format>
+                <args>
+                    <arg evaluator="xml" expression="$ctx:userName"/>
+                    <arg evaluator="xml" expression="$ctx:password"/>
+                    <arg evaluator="xml" expression="$ctx:id"/>
+                    <arg evaluator="xml" expression="$ctx:idType"/>
+                    <arg evaluator="xml" expression="$ctx:sequenceNumber"/>
+                    <arg evaluator="xml" expression="$ctx:laborOffice"/>
+                </args>
+            </payloadFactory>
+            <header name="Content-Type" scope="transport" value="text/xml;charset=UTF-8"/>
+            <header name="Action" scope="default" value="http://tempuri.org/ICRMSubscriptionGDSMTService/GetCustomerWaselNotCancelled"/>
+            <script language="js"><![CDATA[var payload = mc.getPayloadJSON()
+var log=mc.getServiceLog()
+var results = payload;
+var response =<tem:GetCustomerWaselNotCancelled xmlns:tem="http://tempuri.org/"></tem:GetCustomerWaselNotCancelled>;
+var elem = results;
+log.info("elem"+ elem);
+if(elem.userName)
+response.GetCustomerWaselNotCancelled += <tem:userName xmlns:tem="http://tempuri.org/">{elem.userName}</tem:userName>
+
+ 
+
+
+if(elem.password)
+response.GetCustomerWaselNotCancelled += <tem:password xmlns:tem="http://tempuri.org/">{elem.password}</tem:password>
+if(elem.id)
+response.GetCustomerWaselNotCancelled += <tem:id xmlns:tem="http://tempuri.org/">{elem.id}</tem:id>
+if(elem.idType)
+response.GetCustomerWaselNotCancelled += <tem:idType xmlns:tem="http://tempuri.org/">{elem.idType}</tem:idType>
+if(elem.sequenceNumber)
+response.GetCustomerWaselNotCancelled += <tem:sequenceNumber xmlns:tem="http://tempuri.org/">{elem.sequenceNumber}</tem:sequenceNumber>
+
+ 
+
+mc.setPayloadXML(response);
+log.info("xml payload is   "+ response);]]></script>
+            <log level="full" separator="   afterxmlpayload "/>
+            <call>
+                <endpoint key="CRM_AddressbyCREP"/>
+            </call>
+            <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence/>
+    </resource>
+</api>

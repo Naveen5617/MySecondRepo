@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/VerifyandRegisterProcessAPI" name="VerifyandRegisterProcessAPI" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="GET">
+        <inSequence>
+            <propertyGroup>
+                <property expression="get-property('query.param.CallerID')" name="CallerID" scope="default" type="STRING"/>
+                <property expression="get-property('query.param.CallerKey')" name="CallerKey" scope="default" type="STRING"/>
+                <property expression="get-property('query.param.Email')" name="Email" scope="default" type="STRING"/>
+                <property expression="get-property('query.param.EnglishName')" name="EnglishName" scope="default" type="STRING"/>
+                <property expression="get-property('query.param.MobileNumber')" name="MobileNumber" scope="default" type="STRING"/>
+                <property expression="get-property('query.param.CRType')" name="CRType" scope="default" type="STRING"/>
+                <property expression="get-property('query.param.CRNumber')" name="CRNumber" scope="default" type="STRING"/>
+                <property expression="get-property('query.param.format')" name="format" scope="default" type="STRING"/>
+            </propertyGroup>
+            <payloadFactory media-type="json">
+                <format>{&#xd;
+&#xd;
+"CallerID": "$1",&#xd;
+"CallerKey": "$2",&#xd;
+"RequestData": {&#xd;
+"Email": "$3",&#xd;
+"EnglishName": "$4",&#xd;
+"MobileNumber": "$5",&#xd;
+"CRType": "$6",&#xd;
+"CRNumber": "$7"&#xd;
+}&#xd;
+&#xd;
+}</format>
+                <args>
+                    <arg evaluator="xml" expression="$ctx:CallerID"/>
+                    <arg evaluator="xml" expression="$ctx:CallerKey"/>
+                    <arg evaluator="xml" expression="$ctx:Email"/>
+                    <arg evaluator="xml" expression="$ctx:EnglishName"/>
+                    <arg evaluator="xml" expression="$ctx:MobileNumber"/>
+                    <arg evaluator="xml" expression="$ctx:CRType"/>
+                    <arg evaluator="xml" expression="$ctx:CRNumber"/>
+                </args>
+            </payloadFactory>
+            <call>
+                <endpoint key="VerifyandRegiterSysAPI_EP"/>
+            </call>
+            <log level="full" separator="    afterep   "/>
+            <script language="js"><![CDATA[var payload=mc.getPayloadJSON();
+var verify=constructverifyandRegister();
+if(Object.keys(payload.ResponseData).length > 0)
+{
+var transform = {
+"Addresses":verify,
+"success": true,
+"result": null,
+"statusdescription": null,
+"fullexception": null
+};
+}
+else
+{
+var transform = {
+"Addresses": null,
+"success": false,
+"result": null,
+"statusdescription": "NO-RESULTS",
+"fullexception": null
+};
+}
+function constructverifyandRegister() {
+var Address=[];
+for(i=0;i<Object.keys(payload).length-1;i++) {
+var d=payload.ResponseData;
+var data = {
+CustomerName: (null !=d.CustomerName?d.CustomerName :""),
+BaridiID: (null !=d.BaridiID?d.BaridiID :""),
+MCIStatus: (null !=d.MCIStatus?d.MCIStatus :""),
+MCIStatusCode: (null !=d.MCIStatus?d.MCIStatus :""),
+ErrorCode: (null !=d.ErrorCode?d.ErrorCode :""),
+ErrorFriendlyMessageEN: (null !=payload.GenericResult.ErrorFriendlyMessageEN?d.ErrorFriendlyMessageEN :"")
+}
+Address.push(data);
+};
+return Address;
+}
+mc.setPayloadJSON(transform);]]></script>
+            <filter regex="xml" source="$ctx:format">
+                <then>
+                    <propertyGroup>
+                        <property expression="json-eval($.Addresses)" name="Address" scope="default" type="STRING"/>
+                        <property expression="json-eval($.success)" name="success" scope="default" type="STRING"/>
+                        <property expression="json-eval($.statusdescription)" name="statusdescription" scope="default" type="STRING"/>
+                        <property expression="json-eval($.totalSearchResults)" name="totalSearchResults" scope="default" type="STRING"/>
+                    </propertyGroup>
+                    <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <BusinessOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+$1
+<success>$2</success>
+                                <statusdescription>$3</statusdescription>
+                            </BusinessOutPutParams>
+                        </format>
+                        <args>
+                            <arg evaluator="xml" expression="$body//jsonObject/Addresses"/>
+                            <arg evaluator="xml" expression="$ctx:success"/>
+                            <arg evaluator="xml" expression="$ctx:statusdescription"/>
+                        </args>
+                    </payloadFactory>
+                </then>
+                <else/>
+            </filter>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence/>
+    </resource>
+</api>

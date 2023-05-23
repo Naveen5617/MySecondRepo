@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><artifacts>
+    <artifact name="GetCustomerWaselNotCancelled" groupId="com.example.api" version="1.0.0" type="synapse/api" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/api/GetCustomerWaselNotCancelled.xml</file>
+    </artifact>
+    <artifact name="GetCustomerWaselNotCancelled_swagger" groupId="com.example.metadata" version="1.0.0" type="synapse/metadata" serverRole="EnterpriseServiceBus">
+        <file>src/main/resources/metadata/GetCustomerWaselNotCancelled_swagger.yaml</file>
+    </artifact>
+    <artifact name="GetCustomerWaselNotCancelled_metadata" groupId="com.example.metadata" version="1.0.0" type="synapse/metadata" serverRole="EnterpriseServiceBus">
+        <file>src/main/resources/metadata/GetCustomerWaselNotCancelled_metadata.yaml</file>
+    </artifact>
+    <artifact name="CRM_AddressbyCREP" groupId="com.example.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/CRM_AddressbyCREP.xml</file>
+    </artifact>
+    <artifact name="ProcessAPICustomerWasel" groupId="com.example.api" version="1.0.0" type="synapse/api" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/api/ProcessAPICustomerWasel.xml</file>
+    </artifact>
+    <artifact name="ProcessAPICustomerWasel_swagger" groupId="com.example.metadata" version="1.0.0" type="synapse/metadata" serverRole="EnterpriseServiceBus">
+        <file>src/main/resources/metadata/ProcessAPICustomerWasel_swagger.yaml</file>
+    </artifact>
+    <artifact name="ProcessAPICustomerWasel_metadata" groupId="com.example.metadata" version="1.0.0" type="synapse/metadata" serverRole="EnterpriseServiceBus">
+        <file>src/main/resources/metadata/ProcessAPICustomerWasel_metadata.yaml</file>
+    </artifact>
+    <artifact name="VerifyandRegisterCustomer" groupId="com.example.api" version="1.0.0" type="synapse/api" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/api/VerifyandRegisterCustomer.xml</file>
+    </artifact>
+    <artifact name="VerifyandRegisterCustomer_swagger" groupId="com.example.metadata" version="1.0.0" type="synapse/metadata" serverRole="EnterpriseServiceBus">
+        <file>src/main/resources/metadata/VerifyandRegisterCustomer_swagger.yaml</file>
+    </artifact>
+    <artifact name="VerifyandRegisterCustomer_metadata" groupId="com.example.metadata" version="1.0.0" type="synapse/metadata" serverRole="EnterpriseServiceBus">
+        <file>src/main/resources/metadata/VerifyandRegisterCustomer_metadata.yaml</file>
+    </artifact>
+    <artifact name="VerifyandRegister_EP" groupId="com.example.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/VerifyandRegister_EP.xml</file>
+    </artifact>
+    <artifact name="VerifyandRegiterSysAPI_EP" groupId="com.example.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/VerifyandRegiterSysAPI_EP.xml</file>
+    </artifact>
+    <artifact name="VerifyandRegisterProcessAPI" groupId="com.example.api" version="1.0.0" type="synapse/api" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/api/VerifyandRegisterProcessAPI.xml</file>
+    </artifact>
+    <artifact name="VerifyandRegisterProcessAPI_swagger" groupId="com.example.metadata" version="1.0.0" type="synapse/metadata" serverRole="EnterpriseServiceBus">
+        <file>src/main/resources/metadata/VerifyandRegisterProcessAPI_swagger.yaml</file>
+    </artifact>
+    <artifact name="VerifyandRegisterProcessAPI_metadata" groupId="com.example.metadata" version="1.0.0" type="synapse/metadata" serverRole="EnterpriseServiceBus">
+        <file>src/main/resources/metadata/VerifyandRegisterProcessAPI_metadata.yaml</file>
+    </artifact>
+</artifacts>
